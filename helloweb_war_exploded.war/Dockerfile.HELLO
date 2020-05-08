@@ -1,0 +1,4 @@
+# Pull base image
+From jboss/wildfly
+# EXPOSE 8080
+ADD helloweb_war_exploded.war /opt/jboss/wildfly/standalone/deployments/
