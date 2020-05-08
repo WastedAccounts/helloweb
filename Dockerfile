@@ -21,15 +21,20 @@ RUN cd $HOME \
 
 # Ensure signals are forwarded to the JVM process correctly for graceful shutdown
 ENV LAUNCH_JBOSS_IN_BACKGROUND true
-
 USER jboss
-ADD helloweb_war_exploded.war /opt/jboss/wildfly/standalone/deployments/
-ADD helloweb_war_exploded.dodeploy /opt/jboss/wildfly/standalone/deployments/
+
+# deploy the war to the deployments directory
+ADD war/. /opt/jboss/wildfly/standalone/deployments/
+
+# Changes to get the root context working as expected
+# update standalone.xml and remove the welcome-content/ directory
+ADD standalone.xml /opt/jboss/wildfly/standalone/configuration/
+RUN rm -v -r -f  /opt/jboss/wildfly/welcome-content/*
+RUN rmdir -v /opt/jboss/wildfly/welcome-content/
 
 # Expose the ports we're interested in
 EXPOSE 8080
 
 # Set the default command to run on boot
 # This will boot WildFly in the standalone mode and bind to all interface
-CMD ["/opt/jboss/wildfly/bin/standalone.sh"] 
-# , "-b", "0.0.0.0"]
+CMD ["/opt/jboss/wildfly/bin/standalone.sh" , "-b", "0.0.0.0"]
